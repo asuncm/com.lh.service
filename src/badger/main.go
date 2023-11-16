@@ -5,8 +5,8 @@ import (
 	"log"
 )
 
-func DB() {
-	db, err := badger.Open(badger.DefaultOptions("d:/configuration/badger"))
+func DB(pathname string) {
+	db, err := badger.Open(badger.DefaultOptions(pathname))
 	if err != nil {
 		log.Fatal(err)
 	}

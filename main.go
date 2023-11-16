@@ -2,26 +2,45 @@ package main
 
 import (
 	auth "com.lh.auth/src"
+	"com.lh.service/src/config"
 	"com.lh.service/src/tools"
-	"github.com/dgraph-io/badger/v4"
 	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
 	"os"
+	"strings"
 )
 
-func main() {
+func Config() (config.MiddleConf, error) {
+	platform := tools.Platform("")
 	dir, _ := os.Getwd()
-	tools.Platform(dir)
-	db, err := badger.Open(badger.DefaultOptions("d:/configuration/badger"))
+	dir = strings.Replace(dir, "\\", "/", -1)
+	paths := []string{dir, "config", platform.Env + ".config.yaml"}
+	pathname := strings.Join(paths, "/")
+	configs, err := config.Yaml(pathname)
 	if err != nil {
-		log.Fatal(err)
+		return config.MiddleConf{}, err
 	}
-	defer db.Close()
+	devServe := configs.Services["auth"]
+	root := configs.Root[platform.Platform]
+	database := configs.Database["badger"]
+	return config.MiddleConf{
+		Platform:  platform.Platform,
+		Serve:     "service",
+		Root:      root,
+		Host:      devServe.Host,
+		Port:      devServe.Port,
+		DataCache: database[platform.Platform],
+		DataPort:  devServe.DataPort,
+	}, err
+}
+func main() {
 	router := gin.Default()
+	configs, _ := Config()
+	router.Use(config.MiddleWare(configs))
 	router.GET("/", func(c *gin.Context) {
 		auth.Test()
 		c.String(http.StatusOK, "hello world!")
 	})
-	router.Run("localhost:8000")
+	address := []string{configs.Host, configs.Port}
+	router.Run(strings.Join(address, ":"))
 }

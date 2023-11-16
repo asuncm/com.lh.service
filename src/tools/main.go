@@ -14,6 +14,7 @@ type PlatformConfig struct {
 func Platform(dir string) PlatformConfig {
 	platform := runtime.GOOS
 	env := os.Getenv("mode")
+
 	return PlatformConfig{
 		Platform: platform,
 		Env:      env,
