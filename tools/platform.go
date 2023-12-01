@@ -1,8 +1,10 @@
 package tools
 
 import (
+	"github.com/gin-gonic/gin"
 	"os"
 	"runtime"
+	"strings"
 )
 
 type PlatformConfig struct {
@@ -20,4 +22,11 @@ func Platform(dir string) PlatformConfig {
 		Env:      env,
 		Dir:      dir,
 	}
+}
+
+func Pathname(c *gin.Context, ext string) string {
+	dataCache, _ := c.Get("DataCache")
+	serve, _ := c.Get("Serve")
+	paths := []string{any(dataCache).(string), any(serve).(string)}
+	return strings.Join(paths, ext)
 }

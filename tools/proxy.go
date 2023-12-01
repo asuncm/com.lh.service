@@ -1,7 +1,6 @@
-package proxy
+package tools
 
 import (
-	"com.lh.service/src/config/yaml"
 	"github.com/gin-gonic/gin"
 	"net/http/httputil"
 	"net/url"
@@ -9,7 +8,7 @@ import (
 	"strings"
 )
 
-func Proxy(c *gin.Context, config yaml.ServeConf) {
+func Proxy(c *gin.Context, config ServeConf) {
 	re := regexp.MustCompile("^/api/")
 	URL := c.Request.URL
 	uri := re.ReplaceAllString(URL.Path, "")

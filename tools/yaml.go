@@ -1,6 +1,7 @@
-package yaml
+package tools
 
 import (
+	"errors"
 	"gopkg.in/yaml.v3"
 	"os"
 )
@@ -19,6 +20,20 @@ type ServeConf struct {
 	Port     string `json:"port"`     // 服务端口号
 	Database string `json:"database"` // 数据库名
 	DataPort string `json:"dataPort"` // 数据库端口
+}
+type mapConf = map[string]map[string]string
+
+func Language(dir string) (mapConf, error) {
+	dataBytes, err := os.ReadFile(dir)
+	if err != nil {
+		return mapConf{}, errors.New("获取语言配置失败")
+	}
+	options := mapConf{}
+	err = yaml.Unmarshal(dataBytes, &options)
+	if err != nil {
+		return mapConf{}, errors.New("解析语言配置失败")
+	}
+	return options, err
 }
 
 func Yaml(dir string) (YamlConf, error) {

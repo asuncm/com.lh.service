@@ -1,0 +1,9 @@
+uuid:
+  error: "生成ID标识码错误"
+header:
+  getErr: "获取 Header 参数异常"
+code:
+  c500: ""
+  c400: ""
+  c200: ""
+  c404: ""

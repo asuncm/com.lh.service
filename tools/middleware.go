@@ -1,4 +1,4 @@
-package middleware
+package tools
 
 import (
 	"github.com/gin-gonic/gin"
@@ -14,6 +14,7 @@ type MiddleConf struct {
 	Port      string `json:"port"`      // 端口号
 	DataPort  string `json:"dataPort"`  // 数据库端口
 	DataCache string `json:"dataCache"` // 缓存数据库地址
+	WorkerID  int8   `json:"workerID"`
 }
 
 func Cors() gin.HandlerFunc {
@@ -21,7 +22,7 @@ func Cors() gin.HandlerFunc {
 		method := c.Request.Method
 		host := c.Request.Host
 		c.Header("Access-Control-Allow-Origin", host)
-		c.Header("Access-Control-Allow-Headers", "Content-Type,AccessToken,X-CSRF-Token, Authorization, Token, SSID, Verify, UUID")
+		c.Header("Access-Control-Allow-Headers", "Content-Type,AccessToken,X-CSRF-Token, Authorization, Token, SSID, Verify, UUID, Language")
 		c.Header("Access-Control-Allow-Methods", method)
 		c.Header("Access-Control-Expose-Headers", "Content-Length, Access-Control-Allow-Origin, Access-Control-Allow-Headers, Content-Type")
 		c.Header("Access-Control-Allow-Credentials", "true")
