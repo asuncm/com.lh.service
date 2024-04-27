@@ -2,7 +2,6 @@ package badger
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/dgraph-io/badger/v4"
 	"os"
 )
@@ -27,7 +26,6 @@ func Marshal(data DataConf) []byte {
 	list := make(DataConf)
 	for key, val := range data {
 		list[key] = val
-		fmt.Println(key, "key", val)
 	}
 	bytes, _ := json.Marshal(list)
 	return bytes
