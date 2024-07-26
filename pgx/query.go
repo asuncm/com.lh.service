@@ -1,4 +1,4 @@
-package yugabyte
+package pgx
 
 func Query() {
 

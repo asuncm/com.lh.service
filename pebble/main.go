@@ -5,20 +5,27 @@ import (
 	"encoding/gob"
 	"errors"
 	"github.com/cockroachdb/pebble"
+	"time"
 )
 
+type DConf = map[string]interface{}
+
 type Config struct {
-	Path   string         `json:"path"`
-	Config pebble.Options `json:"config"`
-	Option
+	Path     string         `json:"path"`
+	Config   pebble.Options `json:"config"`
+	Key      string         `json:"key"`
+	Max      int            `json:"max"`
+	DTSJ     int64          `json:"dtsj"`
+	GQSJ     int64          `json:"gqsj"`
+	Duration time.Duration  `json:"duration"`
+	Data     DConf          `json:"data"`
 }
 
-func OpenDB(pathname string, opts pebble.Options) (*pebble.DB, interface{}) {
-	db, err := pebble.Open(pathname, &opts)
+func OpenDB(opts Config) (*pebble.DB, error) {
+	//platform := tools.Platform("")
+	db, err := pebble.Open(opts.Path, &opts.Config)
 	if err != nil {
-		str := "SQLite"
-		db.Close()
-		return nil, str
+		return nil, errors.New("SQLite")
 	} else {
 		return db, nil
 	}

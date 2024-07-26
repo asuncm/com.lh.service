@@ -1,8 +1,8 @@
 package tools
 
 import (
-	"github.com/gin-gonic/gin"
 	"os"
+	"regexp"
 	"runtime"
 	"strings"
 )
@@ -32,24 +32,14 @@ type PathConfig struct {
 	Item string `json:"item"`
 }
 
-func Pathname(c *gin.Context, ext string) PathConfig {
-	dataCache, _ := c.Get("DataCache")
-	serve, _ := c.Get("Serve")
-	path := os.Getenv(any(dataCache).(string))
-	paths := []string{path, any(serve).(string)}
-	ps := strings.Join(paths, ext)
-	ps = strings.Replace(ps, "\\", "/", -1)
-	return PathConfig{
-		Root: path,
-		Path: ps,
-		Item: any(serve).(string),
-	}
-}
-
 func GetPath(key string, suffix string) string {
 	path := os.Getenv(any(key).(string))
 	path = strings.Replace(path, "\\", "/", -1)
 	paths := []string{path, suffix}
 	ps := strings.Join(paths, "/")
+	isB, err := regexp.MatchString("/$", ps)
+	if isB && err == nil {
+		return ps[:len(ps)-1]
+	}
 	return ps
 }

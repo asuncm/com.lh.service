@@ -19,7 +19,6 @@ type ServeConf struct {
 	Host     string `json:"host"`     // 主域名
 	Port     string `json:"port"`     // 服务端口号
 	Database string `json:"database"` // 数据库名
-	DataPort string `json:"dataPort"` // 数据库端口
 }
 type mapConf = map[string]map[string]string
 

@@ -1,4 +1,4 @@
-package yugabyte
+package pgx
 
 func TABLE(key string) error {
 	//db, err := OpenDB("allkic", "")

@@ -6,17 +6,6 @@ import (
 	"reflect"
 )
 
-type MiddleConf struct {
-	Platform  string `json:"platform"`  // 平台类型
-	Serve     string `json:"serve"`     // 当前服务
-	Root      string `json:"root"`      // 当前服务
-	Host      string `json:"host"`      // 主机名
-	Port      string `json:"port"`      // 端口号
-	DataPort  string `json:"dataPort"`  // 数据库端口
-	DataCache string `json:"dataCache"` // 缓存数据库地址
-	WorkerID  int8   `json:"workerID"`
-}
-
 func Cors() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		method := c.Request.Method
@@ -33,7 +22,7 @@ func Cors() gin.HandlerFunc {
 	}
 }
 
-func MiddleWare(options MiddleConf) gin.HandlerFunc {
+func MiddleWare(options ServeConf) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		list := reflect.ValueOf(&options)
 		elem := list.Elem()
