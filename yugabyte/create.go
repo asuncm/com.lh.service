@@ -1,4 +1,4 @@
-package pgx
+package yugabyte
 
 func TABLE(key string) error {
 	//db, err := OpenDB("allkic", "")
@@ -24,9 +24,9 @@ func ADD(key string, value string, keys []string, values interface{}) (interface
 	//}
 	//
 	//_, err = pool.CopyFrom(context.Background(),
-	//	pgx.Identifier{value},
+	//	yugabyte.Identifier{value},
 	//	keys,
-	//	pgx.CopyFromRows(values.([][]any)),
+	//	yugabyte.CopyFromRows(values.([][]any)),
 	//)
 	//if err != nil {
 	//	return nil, err

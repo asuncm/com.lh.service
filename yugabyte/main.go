@@ -1,4 +1,4 @@
-package pgx
+package yugabyte
 
 import (
 	"com.lh.service/tools"
@@ -8,7 +8,6 @@ import (
 	"github.com/yugabyte/pgx/v5/pgxpool"
 	"gopkg.in/yaml.v3"
 	"os"
-	"reflect"
 	"strings"
 )
 
@@ -48,16 +47,6 @@ func getConfig() (dbConf, error) {
 	return opts, err
 }
 
-func getUri(key string) string {
-	conf := reflect.ValueOf(options)
-	opts := conf.FieldByName(key)
-	user := opts.FieldByName("Name").String()
-	pw := opts.FieldByName("Password").String()
-	host := opts.FieldByName("Host").String()
-	port := opts.FieldByName("Port").Int()
-	return fmt.Sprintf("%s:%s@%s:%d", user, pw, host, port)
-}
-
 func InitConfig() {
 	var err error
 	options, err = getConfig()
@@ -66,9 +55,9 @@ func InitConfig() {
 	}
 }
 
-func openDB(opts Config) (*pgx.Conn, error) {
-	uri := getUri(opts.Name)
-	url := fmt.Sprintf("postgres://%s/%s?load_balance=true", uri, opts.DB)
+func OpenDB(opts Config) (*pgx.Conn, error) {
+	list := options[opts.Name]
+	url := fmt.Sprintf("postgres://%s:%s@%s:%d/%s?load_balance=true", list.Name, list.Password, list.Host, list.Port, opts.DB)
 	conn, err := pgx.Connect(context.Background(), url)
 	if err != nil {
 		return nil, err
@@ -77,8 +66,8 @@ func openDB(opts Config) (*pgx.Conn, error) {
 }
 
 func poolDB(opts Config) (*pgxpool.Pool, error) {
-	uri := getUri(opts.Name)
-	url := fmt.Sprintf("postgres://%s/%s?load_balance=true", uri, opts.DB)
+	list := options[opts.Name]
+	url := fmt.Sprintf("postgres://%s:%s@%s:%d/%s?load_balance=true", list.Name, list.Password, list.Host, list.Port, opts.DB)
 	pool, err := pgxpool.New(context.Background(), url)
 	if err != nil {
 		return nil, err
@@ -151,6 +140,7 @@ func Ping(opts Config) bool {
 	if err != nil {
 		return false
 	}
+	defer pool.Close()
 	err = pool.Ping(context.Background())
 	if err != nil {
 		return false

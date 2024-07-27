@@ -4,7 +4,7 @@ allkic:
   host: "192.168.3.123"
   port: 5443
 yugabyte:
-  name: "pgx"
+  name: "yugabyte"
   password: "97e526ad9941ecc982ef0f7952264d46"
   host: "192.168.3.123"
   port: 5443

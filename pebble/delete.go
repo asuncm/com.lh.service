@@ -1,27 +1,32 @@
 package pebble
 
 import (
-	"errors"
+	"fmt"
 	"github.com/cockroachdb/pebble"
 )
 
-func delRange(db *pebble.DB, opts Config) string {
-
-	return ""
+func delRange(opts Config) bool {
+	db, err := pebble.Open(opts.Path, &pebble.Options{})
+	if err != nil {
+		return false
+	}
+	defer db.Close()
+	startTime := fmt.Sprintf("%s_%d", opts.Key, opts.DTSJ)
+	endTime := fmt.Sprintf("%s_%d", opts.Key, opts.GQSJ)
+	if err = db.DeleteRange([]byte(startTime), []byte(endTime), &pebble.WriteOptions{}); err != nil {
+		return false
+	}
+	return true
 }
 
-func delKey(db *pebble.DB, key string) error {
-	err := db.Delete([]byte(key), nil)
+func delKey(opts Config) bool {
+	db, err := pebble.Open(opts.Path, &pebble.Options{})
 	if err != nil {
-		return errors.New("del")
+		return false
 	}
-	return nil
-}
-
-func Delkey(db *pebble.DB, key string) error {
-	err := db.Delete([]byte(key), nil)
-	if err != nil {
-		return errors.New("del")
+	defer db.Close()
+	if err = db.Delete([]byte(opts.Key), &pebble.WriteOptions{}); err != nil {
+		return false
 	}
-	return nil
+	return true
 }

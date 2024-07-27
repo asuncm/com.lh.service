@@ -1,10 +1,10 @@
 allkic:
   name: "allkic"
-  password: "97e526ad9941ecc982ef0f7952264d46"
+  password: "Dlg9L014NzjE"
   host: "192.168.3.123"
-  port: 5443
+  port: 5433
 yugabyte:
-  name: "pgx"
-  password: "97e526ad9941ecc982ef0f7952264d46"
+  name: "yugabyte"
+  password: "Dlg9L014NzjE"
   host: "192.168.3.123"
-  port: 5443
+  port: 5433
