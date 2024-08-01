@@ -22,28 +22,15 @@ type ServeConf struct {
 }
 type mapConf = map[string]map[string]string
 
-func Language(dir string) (mapConf, error) {
-	dataBytes, err := os.ReadFile(dir)
-	if err != nil {
-		return mapConf{}, errors.New("获取语言配置失败")
-	}
-	options := mapConf{}
-	err = yaml.Unmarshal(dataBytes, &options)
-	if err != nil {
-		return mapConf{}, errors.New("解析语言配置失败")
-	}
-	return options, err
-}
-
 func Yaml(dir string) (YamlConf, error) {
 	dataBytes, err := os.ReadFile(dir)
 	if err != nil {
-		return YamlConf{}, err
+		return YamlConf{}, errors.New("query")
 	}
 	options := YamlConf{}
 	err = yaml.Unmarshal(dataBytes, &options)
 	if err != nil {
-		return YamlConf{}, err
+		return YamlConf{}, errors.New("serialization")
 	}
 	return options, err
 }

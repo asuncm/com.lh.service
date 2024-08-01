@@ -1,9 +1,10 @@
 package pebble
 
 import (
+	"bytes"
+	"errors"
 	"fmt"
 	"github.com/cockroachdb/pebble"
-	"strconv"
 	"time"
 )
 
@@ -13,7 +14,23 @@ func Add(opts Config) (DConf, error) {
 		return DConf{}, err
 	}
 	defer db.Close()
-	id := fmt.Sprintf("%s_%d", opts.Key, opts.DTSJ)
+	prefix := fmt.Sprintf("%s_%s", opts.Key, opts.DTSJ)
+	iter, err := db.NewIter(&pebble.IterOptions{
+		LowerBound: []byte(prefix),
+		UpperBound: append([]byte(prefix), 0xff),
+	})
+	if err != nil {
+		return DConf{}, errors.New("query")
+	}
+	count := 0
+	for iter.First(); iter.Valid(); iter.Next() {
+		key := iter.Key()
+		count++
+		if !bytes.HasPrefix(key, []byte(prefix)) {
+			break
+		}
+	}
+	id := fmt.Sprintf("%s%d", prefix, count)
 	opts.Data["id"] = id
 	buf, err := EnCode(opts.Data)
 	if err != nil {
@@ -21,7 +38,7 @@ func Add(opts Config) (DConf, error) {
 	}
 	val := []byte(buf.String())
 	if err := db.Set([]byte(id), val, pebble.Sync); err != nil {
-		return DConf{}, err
+		return DConf{}, errors.New("save")
 	}
 	return opts.Data, nil
 }
@@ -29,26 +46,38 @@ func Add(opts Config) (DConf, error) {
 func AddLog(opts Config) (DConf, error) {
 	db, err := pebble.Open(opts.Path, &pebble.Options{})
 	if err != nil {
-		return DConf{}, err
+		return DConf{}, errors.New("SQLite")
 	}
-	defer db.Close()
+
 	start, closer, err := db.Get([]byte(fmt.Sprintf("%s_%s", opts.Key, "time")))
-	var startTime int64
+	var startTime string
 	nowTime := time.Now()
-	endTime := nowTime.Add(-opts.Duration).UnixNano()
+	endTime := nowTime.Add(-opts.Duration).Format("20060102150405")
 	if err != nil {
 		startTime = endTime
 	} else {
-		startT, err := strconv.ParseInt(string(start), 10, 64)
-		if err != nil {
-			startTime = endTime
-		} else {
-			startTime = startT
-		}
+		startTime = string(start)
 		defer closer.Close()
 	}
-	_ = db.DeleteRange([]byte(fmt.Sprintf("%s_%d", opts.Key, startTime)), []byte(fmt.Sprintf("%s_%d", opts.Key, endTime)), &pebble.WriteOptions{})
-	id := fmt.Sprintf("%s_%d", opts.Key, opts.DTSJ)
+	_ = db.DeleteRange([]byte(fmt.Sprintf("%s_%s%d", opts.Key, startTime, 0)), []byte(fmt.Sprintf("%s_%s%d", opts.Key, endTime, 0)), &pebble.WriteOptions{})
+	prefix := fmt.Sprintf("%s_%s", opts.Key, opts.DTSJ)
+	fix := []byte(prefix)
+	iter, err := db.NewIter(&pebble.IterOptions{
+		LowerBound: fix,
+		UpperBound: append(fix, 0xff),
+	})
+	if err != nil {
+		return DConf{}, errors.New("query")
+	}
+	count := 0
+	for iter.First(); iter.Valid(); iter.Next() {
+		key := iter.Key()
+		count++
+		if !bytes.HasPrefix(key, fix) {
+			break
+		}
+	}
+	id := fmt.Sprintf("%s%d", prefix, count)
 	opts.Data["id"] = id
 	buf, err := EnCode(opts.Data)
 	if err != nil {
@@ -56,8 +85,11 @@ func AddLog(opts Config) (DConf, error) {
 	}
 	val := []byte(buf.String())
 	if err := db.Set([]byte(id), val, pebble.Sync); err != nil {
+		return DConf{}, errors.New("save")
+	}
+	if err = db.Set([]byte(fmt.Sprintf("%s_%s", opts.Key, "time")), []byte(string(endTime)), pebble.Sync); err != nil {
 		return DConf{}, err
 	}
-	_ = db.Set([]byte(fmt.Sprintf("%s_%s", opts.Key, "time")), []byte(string(endTime)), pebble.Sync)
+	defer db.Close()
 	return opts.Data, nil
 }

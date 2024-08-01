@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/gob"
 	"errors"
-	"github.com/cockroachdb/pebble"
 	"time"
 )
 
@@ -14,19 +13,10 @@ type Config struct {
 	Path     string        `json:"path"`
 	Key      string        `json:"key"`
 	Max      int           `json:"max"`
-	DTSJ     int64         `json:"dtsj"`
-	GQSJ     int64         `json:"gqsj"`
+	DTSJ     string        `json:"dtsj"`
+	GQSJ     string        `json:"gqsj"`
 	Duration time.Duration `json:"duration"`
 	Data     DConf         `json:"data"`
-}
-
-func OpenDB(opts Config) (*pebble.DB, error) {
-	db, err := pebble.Open(opts.Path, &pebble.Options{})
-	if err != nil {
-		return nil, errors.New("SQLite")
-	} else {
-		return db, nil
-	}
 }
 
 func EnCode(data DConf) (bytes.Buffer, error) {

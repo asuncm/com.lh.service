@@ -1,13 +1,11 @@
 errors:
-  uuid: "Failed to generate a UUID. Procedure"
-  encrypt: "Failed to encrypt the password string. Procedure"
   password: "Incorrect password, please enter the correct password"
   decode: "Failed to decrypt the password string"
-  snowflake: "The snowflake algorithm is abnormal. Procedure"
   SQLite: "Database opening failure"
   serialization: "数据序列化失败"
   save: "数据保存异常"
   timeout: "已超时"
   del: "数据清除异常"
+  query: "读取数据失败"
 success:
   msg: "Request successful"

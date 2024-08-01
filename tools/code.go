@@ -1,28 +1,25 @@
 package tools
 
 import (
-	"com.lh.auth/locales"
+	service "com.lh.service/locales"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 func Code500(msg string, c *gin.Context) {
-	defer func() {
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"code":    500,
-			"msg":     msg,
-			"success": false,
-			"data":    nil,
-		})
-		return
-	}()
-	c.Next()
+	c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+		"code":    500,
+		"msg":     msg,
+		"success": false,
+	})
 	return
 }
 
 func Code200(data interface{}, c *gin.Context) {
 	arrs := []string{"success", "msg"}
-	msg := locales.GetKey(c, arrs)
+	msg := service.GetKey(c, arrs)
+	fmt.Println(c, "poooooo")
 	c.JSON(http.StatusOK, gin.H{
 		"code":    200,
 		"msg":     msg,
