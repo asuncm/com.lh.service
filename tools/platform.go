@@ -1,6 +1,7 @@
 package tools
 
 import (
+	"fmt"
 	"os"
 	"regexp"
 	"runtime"
@@ -33,7 +34,8 @@ type PathConfig struct {
 }
 
 func GetPath(key string, suffix string) string {
-	path := os.Getenv(any(key).(string))
+	fmt.Println(key, os.Getenv("PATH"), "99999999999999999999")
+	path := os.Getenv(key)
 	path = strings.Replace(path, "\\", "/", -1)
 	paths := []string{path, suffix}
 	ps := strings.Join(paths, "/")

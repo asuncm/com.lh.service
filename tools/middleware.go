@@ -21,7 +21,7 @@ func Cors() gin.HandlerFunc {
 	}
 }
 
-func MiddleWare(options ServeConf) gin.HandlerFunc {
+func MiddleWare(options MapConf) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		list := reflect.ValueOf(&options)
 		elem := list.Elem()
